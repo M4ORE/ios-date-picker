@@ -1,0 +1,70 @@
+{
+  "name": "@m4ore/ios-date-picker",
+  "version": "2.0.0",
+  "type": "module",
+  "description": "iOS-styled date picker component with wheel picker and calendar grid for web applications",
+  "keywords": [
+    "datepicker",
+    "date-picker",
+    "ios",
+    "calendar",
+    "wheel-picker",
+    "vanilla-js",
+    "no-dependencies"
+  ],
+  "author": "M4ORE",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/M4ORE/ios-date-picker.git"
+  },
+  "bugs": {
+    "url": "https://github.com/M4ORE/ios-date-picker/issues"
+  },
+  "homepage": "https://github.com/M4ORE/ios-date-picker#readme",
+  "main": "dist/ios-date-picker.umd.js",
+  "module": "dist/ios-date-picker.esm.js",
+  "browser": "dist/ios-date-picker.umd.js",
+  "unpkg": "dist/ios-date-picker.min.js",
+  "jsdelivr": "dist/ios-date-picker.min.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/ios-date-picker.esm.js",
+      "require": "./dist/ios-date-picker.umd.js",
+      "browser": "./dist/ios-date-picker.umd.js"
+    },
+    "./css": "./dist/ios-date-picker.css",
+    "./dist/*": "./dist/*"
+  },
+  "files": [
+    "dist",
+    "src",
+    "img"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "rollup -c && node scripts/build-css.js",
+    "build:js": "rollup -c",
+    "build:css": "node scripts/build-css.js",
+    "prepublishOnly": "npm run build"
+  },
+  "peerDependencies": {
+    "vanilla-calendar-pro": "^2.9.0"
+  },
+  "peerDependenciesMeta": {
+    "vanilla-calendar-pro": {
+      "optional": false
+    }
+  },
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "rollup": "^4.9.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

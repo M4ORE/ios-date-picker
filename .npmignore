@@ -1,0 +1,35 @@
+# Source and config (src is included via package.json files)
+components/
+.storybook/
+stories/
+examples/
+scripts/
+
+# Documentation
+*.md
+!README.md
+plan.md
+storybook.md
+CLAUDE.md
+
+# Config files
+rollup.config.js
+.gitignore
+.editorconfig
+.prettierrc
+.eslintrc*
+
+# CI/CD
+.github/
+
+# Development
+node_modules/
+coverage/
+storybook-static/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

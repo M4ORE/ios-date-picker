@@ -1,0 +1,45 @@
+# Dependencies
+node_modules/
+
+# Build output (uncomment if you want to exclude dist from git)
+# dist/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Editor / IDE
+.idea/
+.vscode/
+*.sublime-*
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test coverage
+coverage/
+
+# Storybook
+storybook-static/
+
+# NPM pack output
+*.tgz
+
+# Environment variables
+.env
+.env.*
+
+# Legacy code (deprecated)
+components/
+
+# Development files (not for repository)
+.claude/
+CLAUDE.md
+plan.md
+storybook.md
+PUBLISHING.md
