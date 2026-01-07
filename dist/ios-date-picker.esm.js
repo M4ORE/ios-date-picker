@@ -1,13 +1,13 @@
 /**
- * iOS Date Picker v2.0.0
- * Copyright (c) 2026-present M4ORE Inc.
+ * iOS Date Picker v1.0.0
+ * Copyright (c) 2025-present M4ORE Inc.
  * Licensed under MIT License
  *
  * @requires vanilla-calendar-pro@^2.9.0
  */
 /**
  * iOS Date Picker
- * Copyright (c) 2026-present M4ORE Inc.
+ * Copyright (c) 2025-present M4ORE Inc.
  * Licensed under MIT License
  *
  * @module @m4ore/ios-date-picker
@@ -473,7 +473,7 @@ class IOSDatePicker {
 
 /**
  * iOS Date Picker
- * Copyright (c) 2026-present M4ORE Inc.
+ * Copyright (c) 2025-present M4ORE Inc.
  * Licensed under MIT License
  *
  * @module @m4ore/ios-date-picker/presets
@@ -542,7 +542,7 @@ function createDatePicker(containerId, presetType, customOptions = {}) {
 
 /**
  * iOS Date Picker
- * Copyright (c) 2026-present M4ORE Inc.
+ * Copyright (c) 2025-present M4ORE Inc.
  * Licensed under MIT License
  *
  * @module @m4ore/ios-date-picker/modal
@@ -838,7 +838,7 @@ const DatePickerModal = {
 
 /**
  * iOS Date Picker
- * Copyright (c) 2026-present M4ORE Inc.
+ * Copyright (c) 2025-present M4ORE Inc.
  * Licensed under MIT License
  *
  * @module @m4ore/ios-date-picker
@@ -864,7 +864,7 @@ const DatePickerModal = {
 
 
 // 版本資訊
-const VERSION = '2.0.0';
+const VERSION = '1.0.0';
 
 export { DatePickerModal, DatePickerPresets, IOSDatePicker, IOSDatePicker as IOSDatePickerDefault, VERSION, close, createDatePicker, init, open };
 //# sourceMappingURL=ios-date-picker.esm.js.map

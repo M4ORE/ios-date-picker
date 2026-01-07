@@ -2,7 +2,7 @@ import resolve from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 
 const banner = `/**
- * iOS Date Picker v2.0.0
+ * iOS Date Picker v1.0.0
  * Copyright (c) 2025-present M4ORE Inc.
  * Licensed under MIT License
  *

@@ -34,4 +34,4 @@ export { DatePickerPresets, createDatePicker } from './date-picker-presets.js';
 export { DatePickerModal, init, open, close } from './date-picker-modal.js';
 
 // 版本資訊
-export const VERSION = '2.0.0';
+export const VERSION = '1.0.0';
