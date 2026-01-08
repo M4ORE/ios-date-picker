@@ -122,7 +122,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const { createDatePicker } = IOSDatePickerLib;
 
       createDatePicker("my-picker", "birthday", {
-        imgPath: "https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/dist/img",
+        imgPath: "https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/img",
         onConfirm: (date) => console.log("選擇的日期:", date),
       });
     </script>
@@ -246,8 +246,8 @@ createDatePicker(containerId, presetType, options)
     defaultDate: '2000-01-01',     // 固定日期
     defaultDate: 'today',          // 特殊值：今日
 
-    minDate: '2020-01-01',         // 最早可選 2020/01/01
-    maxDate: '2025-12-31',         // 最晚可選 2025/12/31
+    minDate: '2020-01-01',         // 最早可選 2020-01-01
+    maxDate: '2025-12-31',         // 最晚可選 2025-12-31
     maxDate: 'today',              // 特殊值：最晚可選今日
 
     currentValue: '2024-06-15',    // 欄位已有值時傳入
@@ -260,7 +260,7 @@ createDatePicker(containerId, presetType, options)
 // Vite/Webpack：通常不需設定，使用預設即可
 
 // CDN：必須設定完整路徑
-imgPath: 'https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/dist/img'
+imgPath: 'https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/img'
 ```
 
 **Callback 函式**
@@ -346,7 +346,7 @@ DatePickerModal.close()
 
 ```javascript
 createDatePicker('my-picker', 'birthday', {
-    imgPath: 'https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/dist/img',
+    imgPath: 'https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/img',
     onConfirm: (date) => console.log(date)
 });
 ```
