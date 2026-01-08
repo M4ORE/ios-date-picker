@@ -55,7 +55,7 @@ const Template = (args) => {
   requestAnimationFrame(() => {
     // 共用選項
     const commonOptions = {
-      imgPath: '',
+      imgPath: '.',
       title: args.title,
       defaultDate: args.defaultDate,
       currentValue: args.currentValue,

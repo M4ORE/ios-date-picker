@@ -110,7 +110,7 @@ const Template = (args) => {
           month: wrapper.querySelector(`#${prefix}-month`),
           day: wrapper.querySelector(`#${prefix}-day`),
         },
-        imgPath: '',
+        imgPath: '.',
         onConfirm: (date) => {
           const result = wrapper.querySelector(`#${prefix}-result`);
           const resultText = wrapper.querySelector(`#${prefix}-result-text`);
@@ -217,7 +217,7 @@ const DateRangeTemplate = (args) => {
           month: wrapper.querySelector(`#${prefix}-start-month`),
           day: wrapper.querySelector(`#${prefix}-start-day`),
         },
-        imgPath: '',
+        imgPath: '.',
         maxDate: endDate || 'today',  // 不能超過結束日期
         onConfirm: (date) => {
           updateResult();
@@ -237,7 +237,7 @@ const DateRangeTemplate = (args) => {
           month: wrapper.querySelector(`#${prefix}-end-month`),
           day: wrapper.querySelector(`#${prefix}-end-day`),
         },
-        imgPath: '',
+        imgPath: '.',
         minDate: startDate || undefined,  // 不能早於開始日期
         maxDate: 'today',
         onConfirm: (date) => {
