@@ -26,6 +26,7 @@ rollup.config.js
 node_modules/
 coverage/
 storybook-static/
+.claude/
 
 # OS files
 .DS_Store

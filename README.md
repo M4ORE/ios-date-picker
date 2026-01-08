@@ -16,49 +16,121 @@ iOS 風格的日期選擇器元件，結合**滾輪式年月切換**與**日曆�
 - **兩種使用模式** - 全頁式嵌入 / 彈窗式呼叫
 - **彈性配置** - 內建預設組態，支援自訂擴充
 
-## 安裝
+---
 
-### NPM（推薦）
+## 快速開始
+
+### 方式一：Vite / Webpack / 現代打包工具
+
+**安裝**
 
 ```bash
 npm install @m4ore/ios-date-picker vanilla-calendar-pro@^2.9.0
 ```
 
-```javascript
-import { IOSDatePicker, createDatePicker, DatePickerModal } from '@m4ore/ios-date-picker';
-import '@m4ore/ios-date-picker/css';
-import 'vanilla-calendar-pro/build/vanilla-calendar.min.css';
+**main.js**
 
-// 基本使用
-const picker = createDatePicker('my-picker', 'birthday', {
-    onConfirm: (date) => console.log(date)  // YYYY-MM-DD
+```javascript
+import { createDatePicker, DatePickerModal } from "@m4ore/ios-date-picker";
+import "@m4ore/ios-date-picker/css";
+import "vanilla-calendar-pro/build/vanilla-calendar.min.css";
+
+document.addEventListener("DOMContentLoaded", () => {
+  // 全頁式
+  createDatePicker("my-picker", "birthday", {
+    onConfirm: (date) => console.log("選擇的日期:", date),
+  });
+
+  // 彈窗式（如需使用）
+  DatePickerModal.init();
+  document.querySelector(".date-fields").addEventListener("click", () => {
+    DatePickerModal.open({
+      preset: "birthday",
+      fields: {
+        year: document.getElementById("birth-year"),
+        month: document.getElementById("birth-month"),
+        day: document.getElementById("birth-day"),
+      },
+    });
+  });
 });
 ```
 
-### CDN
+**index.html**
 
 ```html
-<!-- 依賴：Vanilla Calendar Pro -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@2.9.10/build/vanilla-calendar.min.css">
-<script src="https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@2.9.10/build/vanilla-calendar.min.js"></script>
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Date Picker Demo</title>
+  </head>
+  <body>
+    <!-- 全頁式容器 -->
+    <div id="my-picker"></div>
 
-<!-- iOS Date Picker -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/dist/ios-date-picker.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/dist/ios-date-picker.min.js"></script>
+    <!-- 彈窗式欄位（如需使用） -->
+    <div class="date-fields">
+      <input type="text" id="birth-year" placeholder="年" readonly />
+      <span>/</span>
+      <input type="text" id="birth-month" placeholder="月" readonly />
+      <span>/</span>
+      <input type="text" id="birth-day" placeholder="日" readonly />
+    </div>
 
-<script>
-const { IOSDatePicker, createDatePicker, DatePickerModal } = IOSDatePickerLib;
+    <!-- 彈窗結構（如需使用） -->
+    <div class="overlay" id="date-picker-overlay"></div>
+    <div class="bottom-sheet" id="date-picker-bottom-sheet">
+      <div class="bottom-sheet__header">
+        <div class="grabber"></div>
+      </div>
+      <div class="bottom-sheet__content">
+        <div id="date-picker-container"></div>
+      </div>
+    </div>
 
-const picker = createDatePicker('my-picker', 'birthday', {
-    imgPath: 'https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/img',
-    onConfirm: (date) => console.log(date)
-});
-</script>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
 ```
 
-### 手動下載
+---
 
-從 [GitHub Releases](https://github.com/M4ORE/ios-date-picker/releases) 下載最新版本。
+### 方式二：CDN（純 HTML，無打包工具）
+
+將以下程式碼貼入 HTML 檔案即可運作：
+
+```html
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Date Picker Demo</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@2.9.10/build/vanilla-calendar.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/dist/ios-date-picker.css" />
+  </head>
+  <body>
+    <div id="my-picker"></div>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@2.9.10/build/vanilla-calendar.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/dist/ios-date-picker.min.js"></script>
+    <script>
+      const { createDatePicker } = IOSDatePickerLib;
+
+      createDatePicker("my-picker", "birthday", {
+        imgPath: "https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/dist/img",
+        onConfirm: (date) => console.log("選擇的日期:", date),
+      });
+    </script>
+  </body>
+</html>
+```
+
+---
 
 ## 使用模式
 
@@ -71,17 +143,12 @@ const picker = createDatePicker('my-picker', 'birthday', {
 
 ## 全頁式模式
 
-```html
-<div id="my-picker"></div>
-
-<script>
+```javascript
 const picker = createDatePicker('my-picker', 'birthday', {
-    imgPath: 'img',  // 圖示路徑
     onConfirm: (date) => {
         console.log('選擇的日期:', date);  // 2024-06-15
     }
 });
-</script>
 ```
 
 ## 彈窗式模式
@@ -92,7 +159,7 @@ const picker = createDatePicker('my-picker', 'birthday', {
 
 ```html
 <!-- 日期欄位 -->
-<div class="date-fields" onclick="openPicker()">
+<div class="date-fields">
     <input type="text" id="birth-year" placeholder="年" readonly>
     <span>/</span>
     <input type="text" id="birth-month" placeholder="月" readonly>
@@ -118,18 +185,17 @@ const picker = createDatePicker('my-picker', 'birthday', {
 // 初始化（只需執行一次）
 DatePickerModal.init();
 
-// 開啟日期選擇器
-function openPicker() {
+// 綁定點擊事件
+document.querySelector('.date-fields').addEventListener('click', () => {
     DatePickerModal.open({
         preset: 'birthday',
         fields: {
             year: document.getElementById('birth-year'),
             month: document.getElementById('birth-month'),
             day: document.getElementById('birth-day')
-        },
-        imgPath: 'img'
+        }
     });
-}
+});
 ```
 
 ## 內建預設
@@ -176,7 +242,6 @@ createDatePicker(containerId, presetType, options)
 所有日期參數皆使用 `YYYY-MM-DD` 格式（ISO 8601）：
 
 ```javascript
-// 範例
 {
     defaultDate: '2000-01-01',     // 固定日期
     defaultDate: 'today',          // 特殊值：今日
@@ -192,12 +257,10 @@ createDatePicker(containerId, presetType, options)
 **imgPath 設定**
 
 ```javascript
-// 本地檔案（相對路徑）
-imgPath: 'img'
-imgPath: '../assets/icons'
+// Vite/Webpack：通常不需設定，使用預設即可
 
-// CDN 使用（必須設定完整路徑）
-imgPath: 'https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/img'
+// CDN：必須設定完整路徑
+imgPath: 'https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/dist/img'
 ```
 
 **Callback 函式**
@@ -256,6 +319,65 @@ DatePickerModal.close()
 ## 依賴套件
 
 - [Vanilla Calendar Pro](https://vanilla-calendar.pro/) v2.9.x (MIT License)
+
+---
+
+## Q&A 常見問題
+
+### Q: 為什麼在 `<script>` 標籤中使用 import 會報錯？
+
+**錯誤訊息：** `Uncaught SyntaxError: Cannot use import statement outside a module`
+
+**原因：** `import` 是 ES Module 語法，只能在以下情況使用：
+1. 打包工具環境（Vite/Webpack）的 `.js` 檔案中
+2. `<script type="module">` 中，但只能 import URL，不能 import 套件名稱
+
+**解決方式：**
+- 使用 Vite/Webpack：所有 import 都寫在 `.js` 檔案中
+- 純 HTML：使用 CDN 方式，用 `<script src="...">` 載入
+
+---
+
+### Q: 為什麼圖示（箭頭）會破圖？
+
+**原因：** 打包工具環境下，預設的 `imgPath` 相對路徑可能找不到圖片。
+
+**解決方式：** 設定 `imgPath` 為 CDN 路徑：
+
+```javascript
+createDatePicker('my-picker', 'birthday', {
+    imgPath: 'https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/dist/img',
+    onConfirm: (date) => console.log(date)
+});
+```
+
+---
+
+### Q: 需要手動 import VanillaCalendar 嗎？
+
+**不需要。** 套件內部已經處理好依賴，你只需要：
+
+```javascript
+import { createDatePicker } from "@m4ore/ios-date-picker";
+import "@m4ore/ios-date-picker/css";
+import "vanilla-calendar-pro/build/vanilla-calendar.min.css";
+
+// 直接使用，不需要 import VanillaCalendar
+createDatePicker("my-picker", "birthday", {...});
+```
+
+---
+
+### Q: Vite/Webpack 和 CDN 有什麼差別？
+
+| 項目 | Vite/Webpack | CDN |
+|------|-------------|-----|
+| **安裝方式** | `npm install` | 無需安裝 |
+| **引入方式** | `import` 在 .js 檔案中 | `<script src="...">` 在 HTML 中 |
+| **適用情境** | 現代前端專案 | 簡單網頁、快速原型 |
+| **套件物件** | 直接 import 使用 | 從 `IOSDatePickerLib` 取得 |
+
+---
 
 ## 授權
 
