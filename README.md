@@ -27,6 +27,7 @@ npm install @m4ore/ios-date-picker vanilla-calendar-pro@^2.9.0
 ```javascript
 import { IOSDatePicker, createDatePicker, DatePickerModal } from '@m4ore/ios-date-picker';
 import '@m4ore/ios-date-picker/css';
+import 'vanilla-calendar-pro/build/vanilla-calendar.min.css';
 
 // 基本使用
 const picker = createDatePicker('my-picker', 'birthday', {
