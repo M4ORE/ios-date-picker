@@ -8,6 +8,15 @@ const config = {
     name: '@storybook/html-vite',
     options: {},
   },
-  staticDirs: ['../img']
+  staticDirs: ['../img'],
+
+  // GitHub Pages 部署設定
+  viteFinal: async (config) => {
+    // 生產環境設定 base path
+    if (process.env.NODE_ENV === 'production') {
+      config.base = '/ios-date-picker/';
+    }
+    return config;
+  },
 };
 export default config;
