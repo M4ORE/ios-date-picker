@@ -1,6 +1,6 @@
 {
   "name": "@m4ore/ios-date-picker",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "description": "iOS-styled date picker component with wheel picker and calendar grid for web applications",
   "keywords": [
