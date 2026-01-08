@@ -42,13 +42,14 @@ const picker = createDatePicker('my-picker', 'birthday', {
 <script src="https://cdn.jsdelivr.net/npm/vanilla-calendar-pro@2.9.10/build/vanilla-calendar.min.js"></script>
 
 <!-- iOS Date Picker -->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@2/dist/ios-date-picker.min.css">
-<script src="https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@2/dist/ios-date-picker.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/dist/ios-date-picker.min.css">
+<script src="https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/dist/ios-date-picker.min.js"></script>
 
 <script>
 const { IOSDatePicker, createDatePicker, DatePickerModal } = IOSDatePickerLib;
 
 const picker = createDatePicker('my-picker', 'birthday', {
+    imgPath: 'https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/img',
     onConfirm: (date) => console.log(date)
 });
 </script>
@@ -155,17 +156,64 @@ createDatePicker(containerId, presetType, options)
 
 **options**
 
-| 選項 | 類型 | 說明 |
-|------|------|------|
-| `title` | string | 導覽列標題 |
-| `defaultDate` | string | 預設日期（`'YYYY-MM-DD'` 或 `'today'`） |
-| `currentValue` | string | 欄位目前值 |
-| `minDate` | string | 最小可選日期 |
-| `maxDate` | string | 最大可選日期 |
-| `imgPath` | string | 圖示資料夾路徑 |
-| `onConfirm` | function | 確認 callback |
-| `onBack` | function | 返回 callback |
-| `onDateChange` | function | 日期變更 callback |
+| 選項 | 類型 | 預設值 | 說明 |
+|------|------|--------|------|
+| `title` | string | `'選擇日期'` | 導覽列標題 |
+| `defaultDate` | string | 今日日期 | 初始顯示日期 |
+| `currentValue` | string | `null` | 欄位目前已選值，優先於 defaultDate |
+| `minDate` | string | `'1900-01-01'` | 最小可選日期 |
+| `maxDate` | string | `null` | 最大可選日期，可設為 `'today'` |
+| `minYear` | number | `1900` | 年份滾輪最小年份 |
+| `maxYear` | number | 今年 + 10 | 年份滾輪最大年份 |
+| `imgPath` | string | `'../img'` | 圖示資料夾路徑 |
+| `onConfirm` | function | `null` | 點擊確認時觸發 |
+| `onBack` | function | `null` | 點擊返回時觸發 |
+| `onDateChange` | function | `null` | 選擇日期變更時觸發 |
+
+**日期格式說明**
+
+所有日期參數皆使用 `YYYY-MM-DD` 格式（ISO 8601）：
+
+```javascript
+// 範例
+{
+    defaultDate: '2000-01-01',     // 固定日期
+    defaultDate: 'today',          // 特殊值：今日
+
+    minDate: '2020-01-01',         // 最早可選 2020/01/01
+    maxDate: '2025-12-31',         // 最晚可選 2025/12/31
+    maxDate: 'today',              // 特殊值：最晚可選今日
+
+    currentValue: '2024-06-15',    // 欄位已有值時傳入
+}
+```
+
+**imgPath 設定**
+
+```javascript
+// 本地檔案（相對路徑）
+imgPath: 'img'
+imgPath: '../assets/icons'
+
+// CDN 使用（必須設定完整路徑）
+imgPath: 'https://cdn.jsdelivr.net/npm/@m4ore/ios-date-picker@1/img'
+```
+
+**Callback 函式**
+
+```javascript
+{
+    onConfirm: (date) => {
+        console.log(date);  // '2024-06-15'
+    },
+    onBack: () => {
+        console.log('使用者點擊返回');
+    },
+    onDateChange: (date) => {
+        console.log('日期變更為:', date);  // 每次點擊日期都會觸發
+    }
+}
+```
 
 ### DatePickerModal
 
