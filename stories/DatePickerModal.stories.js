@@ -4,6 +4,253 @@
  */
 import { DatePickerModal } from '../src/index.js';
 
+// 生成唯一 ID 前綴（避免 Docs 模式下 ID 衝突）
+const generateUniquePrefix = () => `modal-${Math.random().toString(36).slice(2, 9)}`;
+
+// 共用樣式
+const styles = {
+  input: `
+    width: 50px;
+    border: none;
+    background: transparent;
+    text-align: center;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: -apple-system, sans-serif;
+    outline: none;
+  `,
+  fieldContainer: `
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 12px;
+    background: #F9F9F9;
+    border-radius: 8px;
+    transition: background 0.2s;
+  `,
+};
+
+/**
+ * 從欄位取得日期字串
+ */
+const getDateFromFields = (wrapper, prefix, type = '') => {
+  const suffix = type ? `-${type}` : '';
+  const year = wrapper.querySelector(`#${prefix}${suffix}-year`)?.value;
+  const month = wrapper.querySelector(`#${prefix}${suffix}-month`)?.value;
+  const day = wrapper.querySelector(`#${prefix}${suffix}-day`)?.value;
+
+  if (year && month && day) {
+    return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
+  }
+  return null;
+};
+
+/**
+ * 單一日期 Template
+ */
+const Template = (args) => {
+  const prefix = generateUniquePrefix();
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'padding: 40px; min-height: 100vh; background: #F2F2F7; box-sizing: border-box;';
+
+  wrapper.innerHTML = `
+    <div style="max-width: 375px; margin: 0 auto;">
+      <h3 style="margin: 0 0 20px; font-family: -apple-system, sans-serif; font-size: 17px; font-weight: 600;">
+        ${args.title || '彈窗模式'}
+      </h3>
+
+      <div style="background: #fff; border-radius: 12px; padding: 16px;">
+        <label style="display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-family: -apple-system, sans-serif;">
+          ${args.label || '選擇日期'}
+        </label>
+        <div id="${prefix}-trigger" style="${styles.fieldContainer}">
+          <input type="text" id="${prefix}-year" placeholder="年" readonly style="${styles.input} width: 60px;">
+          <span style="color: #999;">/</span>
+          <input type="text" id="${prefix}-month" placeholder="月" readonly style="${styles.input} width: 40px;">
+          <span style="color: #999;">/</span>
+          <input type="text" id="${prefix}-day" placeholder="日" readonly style="${styles.input} width: 40px;">
+        </div>
+        <p style="margin: 12px 0 0; font-size: 12px; color: #999; font-family: -apple-system, sans-serif;">
+          點擊上方欄位開啟日期選擇器
+        </p>
+      </div>
+
+      <!-- 選擇結果顯示 -->
+      <div id="${prefix}-result" style="margin-top: 16px; padding: 16px; background: #E3F2FD; border-radius: 12px; display: none;">
+        <div style="font-size: 12px; color: #666; margin-bottom: 4px; font-family: -apple-system, sans-serif;">已選擇日期</div>
+        <div id="${prefix}-result-text" style="font-size: 20px; font-weight: 600; color: #1976D2; font-family: -apple-system, sans-serif;"></div>
+      </div>
+    </div>
+
+    <div class="overlay" id="${prefix}-overlay"></div>
+    <div class="bottom-sheet" id="${prefix}-bottom-sheet">
+      <div class="bottom-sheet__header">
+        <div class="grabber"></div>
+      </div>
+      <div class="bottom-sheet__content">
+        <div id="${prefix}-container"></div>
+      </div>
+    </div>
+  `;
+
+  requestAnimationFrame(() => {
+    DatePickerModal.init({
+      overlayId: `${prefix}-overlay`,
+      bottomSheetId: `${prefix}-bottom-sheet`,
+      containerId: `${prefix}-container`,
+    });
+
+    wrapper.querySelector(`#${prefix}-trigger`).addEventListener('click', () => {
+      DatePickerModal.open({
+        preset: args.preset || 'birthday',
+        title: args.pickerTitle,
+        fields: {
+          year: wrapper.querySelector(`#${prefix}-year`),
+          month: wrapper.querySelector(`#${prefix}-month`),
+          day: wrapper.querySelector(`#${prefix}-day`),
+        },
+        imgPath: '',
+        onConfirm: (date) => {
+          const result = wrapper.querySelector(`#${prefix}-result`);
+          const resultText = wrapper.querySelector(`#${prefix}-result-text`);
+          result.style.display = 'block';
+          resultText.textContent = date;
+        },
+      });
+    });
+  });
+
+  return wrapper;
+};
+
+/**
+ * 日期區間 Template（含防呆邏輯）
+ */
+const DateRangeTemplate = (args) => {
+  const prefix = generateUniquePrefix();
+  const wrapper = document.createElement('div');
+  wrapper.style.cssText = 'padding: 40px; min-height: 100vh; background: #F2F2F7; box-sizing: border-box;';
+
+  wrapper.innerHTML = `
+    <div style="max-width: 375px; margin: 0 auto;">
+      <h3 style="margin: 0 0 20px; font-family: -apple-system, sans-serif; font-size: 17px; font-weight: 600;">
+        ${args.title || '日期區間'}
+      </h3>
+
+      <div style="background: #fff; border-radius: 12px; padding: 16px;">
+        <!-- 開始日期 -->
+        <div style="margin-bottom: 16px;">
+          <label style="display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-family: -apple-system, sans-serif;">
+            ${args.startLabel || '開始日期'}
+          </label>
+          <div id="${prefix}-trigger-start" style="${styles.fieldContainer}">
+            <input type="text" id="${prefix}-start-year" placeholder="年" readonly style="${styles.input} width: 60px;">
+            <span style="color: #999;">/</span>
+            <input type="text" id="${prefix}-start-month" placeholder="月" readonly style="${styles.input} width: 40px;">
+            <span style="color: #999;">/</span>
+            <input type="text" id="${prefix}-start-day" placeholder="日" readonly style="${styles.input} width: 40px;">
+          </div>
+        </div>
+
+        <!-- 結束日期 -->
+        <div>
+          <label style="display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-family: -apple-system, sans-serif;">
+            ${args.endLabel || '結束日期'}
+          </label>
+          <div id="${prefix}-trigger-end" style="${styles.fieldContainer}">
+            <input type="text" id="${prefix}-end-year" placeholder="年" readonly style="${styles.input} width: 60px;">
+            <span style="color: #999;">/</span>
+            <input type="text" id="${prefix}-end-month" placeholder="月" readonly style="${styles.input} width: 40px;">
+            <span style="color: #999;">/</span>
+            <input type="text" id="${prefix}-end-day" placeholder="日" readonly style="${styles.input} width: 40px;">
+          </div>
+        </div>
+      </div>
+
+      <!-- 區間結果顯示 -->
+      <div id="${prefix}-result" style="margin-top: 16px; padding: 16px; background: #E3F2FD; border-radius: 12px; display: none;">
+        <div style="font-size: 12px; color: #666; margin-bottom: 4px; font-family: -apple-system, sans-serif;">已選擇區間</div>
+        <div id="${prefix}-result-text" style="font-size: 18px; font-weight: 600; color: #1976D2; font-family: -apple-system, sans-serif;"></div>
+      </div>
+    </div>
+
+    <div class="overlay" id="${prefix}-overlay"></div>
+    <div class="bottom-sheet" id="${prefix}-bottom-sheet">
+      <div class="bottom-sheet__header">
+        <div class="grabber"></div>
+      </div>
+      <div class="bottom-sheet__content">
+        <div id="${prefix}-container"></div>
+      </div>
+    </div>
+  `;
+
+  const updateResult = () => {
+    const startDate = getDateFromFields(wrapper, prefix, 'start');
+    const endDate = getDateFromFields(wrapper, prefix, 'end');
+
+    if (startDate && endDate) {
+      const result = wrapper.querySelector(`#${prefix}-result`);
+      const resultText = wrapper.querySelector(`#${prefix}-result-text`);
+      result.style.display = 'block';
+      resultText.textContent = `${startDate} ~ ${endDate}`;
+    }
+  };
+
+  requestAnimationFrame(() => {
+    DatePickerModal.init({
+      overlayId: `${prefix}-overlay`,
+      bottomSheetId: `${prefix}-bottom-sheet`,
+      containerId: `${prefix}-container`,
+    });
+
+    // 開始日期：maxDate 限制為已選的結束日期
+    wrapper.querySelector(`#${prefix}-trigger-start`).addEventListener('click', () => {
+      const endDate = getDateFromFields(wrapper, prefix, 'end');
+
+      DatePickerModal.open({
+        preset: args.preset || 'accounting',
+        title: args.startLabel || '開始日期',
+        fields: {
+          year: wrapper.querySelector(`#${prefix}-start-year`),
+          month: wrapper.querySelector(`#${prefix}-start-month`),
+          day: wrapper.querySelector(`#${prefix}-start-day`),
+        },
+        imgPath: '',
+        maxDate: endDate || 'today',  // 不能超過結束日期
+        onConfirm: (date) => {
+          updateResult();
+        },
+      });
+    });
+
+    // 結束日期：minDate 限制為已選的開始日期
+    wrapper.querySelector(`#${prefix}-trigger-end`).addEventListener('click', () => {
+      const startDate = getDateFromFields(wrapper, prefix, 'start');
+
+      DatePickerModal.open({
+        preset: args.preset || 'accounting',
+        title: args.endLabel || '結束日期',
+        fields: {
+          year: wrapper.querySelector(`#${prefix}-end-year`),
+          month: wrapper.querySelector(`#${prefix}-end-month`),
+          day: wrapper.querySelector(`#${prefix}-end-day`),
+        },
+        imgPath: '',
+        minDate: startDate || undefined,  // 不能早於開始日期
+        maxDate: 'today',
+        onConfirm: (date) => {
+          updateResult();
+        },
+      });
+    });
+  });
+
+  return wrapper;
+};
+
+// Story 設定
 export default {
   title: 'Components/DatePickerModal',
   parameters: {
@@ -11,419 +258,105 @@ export default {
   },
 };
 
-// 共用樣式
-const inputStyle = `
-  width: 50px;
-  border: none;
-  background: transparent;
-  text-align: center;
-  font-size: 16px;
-  cursor: pointer;
-  font-family: -apple-system, sans-serif;
-  outline: none;
-`;
-
-const fieldContainerStyle = `
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  cursor: pointer;
-  padding: 12px;
-  background: #F9F9F9;
-  border-radius: 8px;
-  transition: background 0.2s;
-`;
-
 /**
- * 生日選擇彈窗
+ * 彈窗模式完整展示
  */
-export const BirthdayModal = {
-  render: () => {
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'padding: 40px; min-height: 100vh; background: #F2F2F7; box-sizing: border-box;';
-
-    wrapper.innerHTML = `
-      <div style="max-width: 375px; margin: 0 auto;">
-        <h3 style="margin: 0 0 20px; font-family: -apple-system, sans-serif; font-size: 17px; font-weight: 600;">
-          彈窗模式範例
-        </h3>
-
-        <div style="background: #fff; border-radius: 12px; padding: 16px;">
-          <label style="display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-family: -apple-system, sans-serif;">
-            生日
-          </label>
-          <div id="trigger-birthday" style="${fieldContainerStyle}">
-            <input type="text" id="birth-year" placeholder="年" readonly style="${inputStyle} width: 60px;">
-            <span style="color: #999;">/</span>
-            <input type="text" id="birth-month" placeholder="月" readonly style="${inputStyle} width: 40px;">
-            <span style="color: #999;">/</span>
-            <input type="text" id="birth-day" placeholder="日" readonly style="${inputStyle} width: 40px;">
-          </div>
-          <p style="margin: 12px 0 0; font-size: 12px; color: #999; font-family: -apple-system, sans-serif;">
-            點擊上方欄位開啟日期選擇器
-          </p>
-        </div>
-      </div>
-
-      <div class="overlay" id="date-picker-overlay"></div>
-      <div class="bottom-sheet" id="date-picker-bottom-sheet">
-        <div class="bottom-sheet__header">
-          <div class="grabber"></div>
-        </div>
-        <div class="bottom-sheet__content">
-          <div id="date-picker-container"></div>
-        </div>
-      </div>
-    `;
-
-    setTimeout(() => {
-      DatePickerModal.init({
-        overlayId: 'date-picker-overlay',
-        bottomSheetId: 'date-picker-bottom-sheet',
-        containerId: 'date-picker-container',
-      });
-
-      wrapper.querySelector('#trigger-birthday').addEventListener('click', () => {
-        DatePickerModal.open({
-          preset: 'birthday',
-          fields: {
-            year: wrapper.querySelector('#birth-year'),
-            month: wrapper.querySelector('#birth-month'),
-            day: wrapper.querySelector('#birth-day'),
-          },
-          imgPath: '',
-        });
-      });
-    }, 100);
-
-    return wrapper;
+export const Playground = {
+  args: {
+    preset: 'birthday',
+    title: '彈窗模式',
+    label: '生日',
+    pickerTitle: '選擇生日',
   },
+  argTypes: {
+    preset: {
+      control: 'select',
+      options: ['birthday', 'memberCreated', 'accounting', 'orderManagement'],
+      description: '預設模式',
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: 'birthday' },
+      },
+    },
+    title: {
+      control: 'text',
+      description: '卡片標題',
+    },
+    label: {
+      control: 'text',
+      description: '欄位標籤',
+    },
+    pickerTitle: {
+      control: 'text',
+      description: '選擇器標題（彈窗內）',
+    },
+  },
+  render: (args) => Template(args),
   parameters: {
     docs: {
       description: {
-        story: '點擊日期欄位開啟 Bottom Sheet 彈窗選擇生日。支援下滑關閉。',
+        story: `彈窗式日期選擇器，點擊欄位開啟 Bottom Sheet。
+
+### 功能特色
+- 支援下滑關閉手勢
+- 自動填入年/月/日欄位
+- 選擇後顯示結果
+
+### Controls
+- **preset**: 切換預設模式
+- **title**: 卡片標題
+- **label**: 欄位標籤
+- **pickerTitle**: 彈窗內的選擇器標題`,
       },
     },
   },
 };
 
 /**
- * 會員建立時間彈窗
+ * 日期區間選擇（含防呆）
  */
-export const MemberCreatedModal = {
-  render: () => {
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'padding: 40px; min-height: 100vh; background: #F2F2F7; box-sizing: border-box;';
-
-    wrapper.innerHTML = `
-      <div style="max-width: 375px; margin: 0 auto;">
-        <h3 style="margin: 0 0 20px; font-family: -apple-system, sans-serif; font-size: 17px; font-weight: 600;">
-          會員建立時間
-        </h3>
-
-        <div style="background: #fff; border-radius: 12px; padding: 16px;">
-          <label style="display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-family: -apple-system, sans-serif;">
-            建立日期
-          </label>
-          <div id="trigger-member" style="${fieldContainerStyle}">
-            <input type="text" id="member-year" placeholder="年" readonly style="${inputStyle} width: 60px;">
-            <span style="color: #999;">/</span>
-            <input type="text" id="member-month" placeholder="月" readonly style="${inputStyle} width: 40px;">
-            <span style="color: #999;">/</span>
-            <input type="text" id="member-day" placeholder="日" readonly style="${inputStyle} width: 40px;">
-          </div>
-        </div>
-      </div>
-
-      <div class="overlay" id="member-overlay"></div>
-      <div class="bottom-sheet" id="member-bottom-sheet">
-        <div class="bottom-sheet__header">
-          <div class="grabber"></div>
-        </div>
-        <div class="bottom-sheet__content">
-          <div id="member-container"></div>
-        </div>
-      </div>
-    `;
-
-    setTimeout(() => {
-      DatePickerModal.init({
-        overlayId: 'member-overlay',
-        bottomSheetId: 'member-bottom-sheet',
-        containerId: 'member-container',
-      });
-
-      wrapper.querySelector('#trigger-member').addEventListener('click', () => {
-        DatePickerModal.open({
-          preset: 'memberCreated',
-          fields: {
-            year: wrapper.querySelector('#member-year'),
-            month: wrapper.querySelector('#member-month'),
-            day: wrapper.querySelector('#member-day'),
-          },
-          imgPath: '',
-        });
-      });
-    }, 100);
-
-    return wrapper;
+export const DateRange = {
+  args: {
+    preset: 'accounting',
+    title: '日期區間查詢',
+    startLabel: '開始日期',
+    endLabel: '結束日期',
   },
-  parameters: {
-    docs: {
-      description: {
-        story: '會員建立時間選擇，日期範圍從 2015 年至今日。',
-      },
+  argTypes: {
+    preset: {
+      control: 'select',
+      options: ['birthday', 'memberCreated', 'accounting', 'orderManagement'],
+      description: '預設模式',
+    },
+    title: {
+      control: 'text',
+      description: '卡片標題',
+    },
+    startLabel: {
+      control: 'text',
+      description: '開始日期標籤',
+    },
+    endLabel: {
+      control: 'text',
+      description: '結束日期標籤',
     },
   },
-};
-
-/**
- * 表單整合
- */
-export const FormIntegration = {
-  render: () => {
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'padding: 40px; min-height: 100vh; background: #F2F2F7; box-sizing: border-box;';
-
-    wrapper.innerHTML = `
-      <div style="max-width: 375px; margin: 0 auto;">
-        <h3 style="margin: 0 0 20px; font-family: -apple-system, sans-serif; font-size: 17px; font-weight: 600;">
-          會員註冊表單
-        </h3>
-
-        <form id="registration-form" style="background: #fff; border-radius: 12px; padding: 20px;">
-          <!-- 姓名 -->
-          <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-family: -apple-system, sans-serif;">
-              姓名 <span style="color: #E53935;">*</span>
-            </label>
-            <input type="text" id="form-name" placeholder="請輸入姓名"
-              style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 16px; box-sizing: border-box; font-family: -apple-system, sans-serif;">
-          </div>
-
-          <!-- 手機 -->
-          <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-family: -apple-system, sans-serif;">
-              手機號碼 <span style="color: #E53935;">*</span>
-            </label>
-            <input type="tel" id="form-phone" placeholder="0912345678"
-              style="width: 100%; padding: 12px; border: 1px solid #E0E0E0; border-radius: 8px; font-size: 16px; box-sizing: border-box; font-family: -apple-system, sans-serif;">
-          </div>
-
-          <!-- 生日 -->
-          <div style="margin-bottom: 20px;">
-            <label style="display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-family: -apple-system, sans-serif;">
-              生日 <span style="color: #E53935;">*</span>
-            </label>
-            <div id="trigger-form-birthday" style="${fieldContainerStyle} border: 1px solid #E0E0E0;">
-              <input type="text" id="form-year" placeholder="年" readonly style="${inputStyle} width: 60px;">
-              <span style="color: #999;">/</span>
-              <input type="text" id="form-month" placeholder="月" readonly style="${inputStyle} width: 40px;">
-              <span style="color: #999;">/</span>
-              <input type="text" id="form-day" placeholder="日" readonly style="${inputStyle} width: 40px;">
-            </div>
-          </div>
-
-          <!-- 送出按鈕 -->
-          <button type="submit"
-            style="width: 100%; padding: 14px; background: #FF812A; color: #fff; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; font-family: -apple-system, sans-serif;">
-            送出註冊
-          </button>
-        </form>
-      </div>
-
-      <div class="overlay" id="form-overlay"></div>
-      <div class="bottom-sheet" id="form-bottom-sheet">
-        <div class="bottom-sheet__header">
-          <div class="grabber"></div>
-        </div>
-        <div class="bottom-sheet__content">
-          <div id="form-container"></div>
-        </div>
-      </div>
-    `;
-
-    setTimeout(() => {
-      DatePickerModal.init({
-        overlayId: 'form-overlay',
-        bottomSheetId: 'form-bottom-sheet',
-        containerId: 'form-container',
-      });
-
-      wrapper.querySelector('#trigger-form-birthday').addEventListener('click', () => {
-        DatePickerModal.open({
-          preset: 'birthday',
-          fields: {
-            year: wrapper.querySelector('#form-year'),
-            month: wrapper.querySelector('#form-month'),
-            day: wrapper.querySelector('#form-day'),
-          },
-          imgPath: '',
-        });
-      });
-
-      wrapper.querySelector('#registration-form').addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = wrapper.querySelector('#form-name').value;
-        const phone = wrapper.querySelector('#form-phone').value;
-        const year = wrapper.querySelector('#form-year').value;
-        const month = wrapper.querySelector('#form-month').value;
-        const day = wrapper.querySelector('#form-day').value;
-
-        if (!name || !phone || !year || !month || !day) {
-          alert('請填寫所有必填欄位');
-          return;
-        }
-
-        alert(`註冊成功！\n姓名：${name}\n手機：${phone}\n生日：${year}-${month}-${day}`);
-      });
-    }, 100);
-
-    return wrapper;
-  },
+  render: (args) => DateRangeTemplate(args),
   parameters: {
     docs: {
       description: {
-        story: '完整的表單整合範例，展示日期選擇器如何與其他表單欄位配合使用。',
-      },
-    },
-  },
-};
+        story: `日期區間選擇，適用於查詢、篩選等情境。
 
-/**
- * 多個日期欄位（開始/結束日期）
- */
-export const MultiplePickers = {
-  render: () => {
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = 'padding: 40px; min-height: 100vh; background: #F2F2F7; box-sizing: border-box;';
+### 防呆機制
+- **開始日期**: 不能選擇超過已選的結束日期（maxDate 限制）
+- **結束日期**: 不能選擇早於已選的開始日期（minDate 限制）
 
-    wrapper.innerHTML = `
-      <div style="max-width: 375px; margin: 0 auto;">
-        <h3 style="margin: 0 0 20px; font-family: -apple-system, sans-serif; font-size: 17px; font-weight: 600;">
-          日期區間查詢
-        </h3>
+### 使用場景
+- 帳務查詢
+- 訂單篩選
+- 報表匯出
 
-        <div style="background: #fff; border-radius: 12px; padding: 16px;">
-          <!-- 開始日期 -->
-          <div style="margin-bottom: 16px;">
-            <label style="display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-family: -apple-system, sans-serif;">
-              開始日期
-            </label>
-            <div id="trigger-start" style="${fieldContainerStyle}">
-              <input type="text" id="start-year" placeholder="年" readonly style="${inputStyle} width: 60px;">
-              <span style="color: #999;">/</span>
-              <input type="text" id="start-month" placeholder="月" readonly style="${inputStyle} width: 40px;">
-              <span style="color: #999;">/</span>
-              <input type="text" id="start-day" placeholder="日" readonly style="${inputStyle} width: 40px;">
-            </div>
-          </div>
-
-          <!-- 結束日期 -->
-          <div style="margin-bottom: 16px;">
-            <label style="display: block; font-size: 13px; color: #666; margin-bottom: 8px; font-family: -apple-system, sans-serif;">
-              結束日期
-            </label>
-            <div id="trigger-end" style="${fieldContainerStyle}">
-              <input type="text" id="end-year" placeholder="年" readonly style="${inputStyle} width: 60px;">
-              <span style="color: #999;">/</span>
-              <input type="text" id="end-month" placeholder="月" readonly style="${inputStyle} width: 40px;">
-              <span style="color: #999;">/</span>
-              <input type="text" id="end-day" placeholder="日" readonly style="${inputStyle} width: 40px;">
-            </div>
-          </div>
-
-          <!-- 查詢按鈕 -->
-          <button id="search-btn" type="button"
-            style="width: 100%; padding: 12px; background: #007AFF; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; font-family: -apple-system, sans-serif;">
-            查詢
-          </button>
-        </div>
-
-        <!-- 結果顯示 -->
-        <div id="result-display" style="margin-top: 16px; padding: 16px; background: #fff; border-radius: 12px; display: none;">
-          <div style="font-size: 13px; color: #666; margin-bottom: 4px; font-family: -apple-system, sans-serif;">查詢區間</div>
-          <div id="result-text" style="font-size: 16px; font-weight: 600; font-family: -apple-system, sans-serif;"></div>
-        </div>
-      </div>
-
-      <div class="overlay" id="multi-overlay"></div>
-      <div class="bottom-sheet" id="multi-bottom-sheet">
-        <div class="bottom-sheet__header">
-          <div class="grabber"></div>
-        </div>
-        <div class="bottom-sheet__content">
-          <div id="multi-container"></div>
-        </div>
-      </div>
-    `;
-
-    setTimeout(() => {
-      DatePickerModal.init({
-        overlayId: 'multi-overlay',
-        bottomSheetId: 'multi-bottom-sheet',
-        containerId: 'multi-container',
-      });
-
-      // 開始日期
-      wrapper.querySelector('#trigger-start').addEventListener('click', () => {
-        DatePickerModal.open({
-          preset: 'accounting',
-          title: '開始日期',
-          fields: {
-            year: wrapper.querySelector('#start-year'),
-            month: wrapper.querySelector('#start-month'),
-            day: wrapper.querySelector('#start-day'),
-          },
-          imgPath: '',
-        });
-      });
-
-      // 結束日期
-      wrapper.querySelector('#trigger-end').addEventListener('click', () => {
-        DatePickerModal.open({
-          preset: 'accounting',
-          title: '結束日期',
-          fields: {
-            year: wrapper.querySelector('#end-year'),
-            month: wrapper.querySelector('#end-month'),
-            day: wrapper.querySelector('#end-day'),
-          },
-          imgPath: '',
-        });
-      });
-
-      // 查詢按鈕
-      wrapper.querySelector('#search-btn').addEventListener('click', () => {
-        const startYear = wrapper.querySelector('#start-year').value;
-        const startMonth = wrapper.querySelector('#start-month').value;
-        const startDay = wrapper.querySelector('#start-day').value;
-        const endYear = wrapper.querySelector('#end-year').value;
-        const endMonth = wrapper.querySelector('#end-month').value;
-        const endDay = wrapper.querySelector('#end-day').value;
-
-        if (!startYear || !endYear) {
-          alert('請選擇開始和結束日期');
-          return;
-        }
-
-        const startDate = `${startYear}-${startMonth}-${startDay}`;
-        const endDate = `${endYear}-${endMonth}-${endDay}`;
-
-        const resultDisplay = wrapper.querySelector('#result-display');
-        const resultText = wrapper.querySelector('#result-text');
-
-        resultDisplay.style.display = 'block';
-        resultText.textContent = `${startDate} 至 ${endDate}`;
-      });
-    }, 100);
-
-    return wrapper;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: '多個日期欄位範例，適用於日期區間查詢（開始日期、結束日期）。',
+選擇開始和結束日期後，上方會顯示選擇的區間。`,
       },
     },
   },

@@ -1,26 +1,8 @@
 /**
  * iOS Date Picker Stories
+ * 使用 Template 模式與 Controls 動態調整
  */
 import { createDatePicker, IOSDatePicker } from '../src/index.js';
-
-export default {
-  title: 'Components/DatePicker',
-  parameters: {
-    layout: 'centered',
-  },
-};
-
-// 建立容器的輔助函式
-const createContainer = (id = 'picker-container') => {
-  const container = document.createElement('div');
-  container.id = id;
-  container.style.width = '375px';
-  container.style.background = '#fff';
-  container.style.borderRadius = '12px';
-  container.style.overflow = 'hidden';
-  container.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)';
-  return container;
-};
 
 // 取得今日日期字串
 const getTodayString = () => {
@@ -28,362 +10,218 @@ const getTodayString = () => {
   return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
 };
 
-// 取得未來日期
-const getFutureDate = (days) => {
-  const date = new Date();
-  date.setDate(date.getDate() + days);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-};
-
 /**
- * 生日選擇器 - 最常見的使用情境
+ * Template 工廠函式（參考文件 4.4）
+ * 封裝 DOM 建立邏輯，避免重複程式碼
  */
-export const Birthday = {
-  render: () => {
-    const container = createContainer('birthday-picker');
+const Template = (args) => {
+  const wrapper = document.createElement('div');
+  const uniqueId = `picker-${Math.random().toString(36).slice(2, 9)}`;
 
-    setTimeout(() => {
-      createDatePicker('birthday-picker', 'birthday', {
-        imgPath: '',
-        onConfirm: (date) => {
-          console.log('選擇的生日:', date);
-          alert(`選擇的生日: ${date}`);
-        },
-        onBack: () => {
-          console.log('返回');
-        },
-      });
-    }, 0);
+  // 即時顯示面板
+  const display = document.createElement('div');
+  display.style.cssText = 'margin-bottom: 16px; padding: 16px; background: #E3F2FD; border-radius: 8px; font-family: -apple-system, sans-serif; text-align: center;';
+  display.innerHTML = `
+    <div style="font-size: 12px; color: #666; margin-bottom: 4px;">目前選擇的日期</div>
+    <div id="${uniqueId}-display" style="font-size: 24px; font-weight: 600; color: #1976D2;">尚未選擇</div>
+  `;
+  wrapper.appendChild(display);
 
-    return container;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: '生日選擇器，日期範圍從 1900 年至今日，預設日期為 2000-01-01。',
-      },
-    },
-  },
-};
+  // 建立容器
+  const container = document.createElement('div');
+  container.id = uniqueId;
+  container.style.width = args.width || '375px';
+  container.style.background = '#fff';
+  container.style.borderRadius = '12px';
+  container.style.overflow = 'hidden';
+  container.style.boxShadow = '0 4px 20px rgba(0,0,0,0.15)';
 
-/**
- * 會員建立時間
- */
-export const MemberCreated = {
-  render: () => {
-    const container = createContainer('member-picker');
-
-    setTimeout(() => {
-      createDatePicker('member-picker', 'memberCreated', {
-        imgPath: '',
-        onConfirm: (date) => {
-          console.log('會員建立時間:', date);
-          alert(`會員建立時間: ${date}`);
-        },
-      });
-    }, 0);
-
-    return container;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: '會員建立時間選擇器，日期範圍從 2015 年至今日。',
-      },
-    },
-  },
-};
-
-/**
- * 帳務日期
- */
-export const Accounting = {
-  render: () => {
-    const container = createContainer('accounting-picker');
-
-    setTimeout(() => {
-      createDatePicker('accounting-picker', 'accounting', {
-        imgPath: '',
-        onConfirm: (date) => {
-          console.log('帳務日期:', date);
-          alert(`帳務日期: ${date}`);
-        },
-      });
-    }, 0);
-
-    return container;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: '帳務查詢用日期選擇器。',
-      },
-    },
-  },
-};
-
-/**
- * 訂單日期
- */
-export const OrderManagement = {
-  render: () => {
-    const container = createContainer('order-picker');
-
-    setTimeout(() => {
-      createDatePicker('order-picker', 'orderManagement', {
-        imgPath: '',
-        onConfirm: (date) => {
-          console.log('訂單日期:', date);
-          alert(`訂單日期: ${date}`);
-        },
-      });
-    }, 0);
-
-    return container;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: '訂單管理用日期選擇器。',
-      },
-    },
-  },
-};
-
-/**
- * 自訂設定
- */
-export const CustomOptions = {
-  render: () => {
-    const container = createContainer('custom-picker');
-
-    setTimeout(() => {
-      new IOSDatePicker('custom-picker', {
-        title: '選擇日期',
-        defaultDate: '2024-06-15',
-        minDate: '2024-01-01',
-        maxDate: '2024-12-31',
-        imgPath: '',
-        onConfirm: (date) => {
-          console.log('選擇的日期:', date);
-          alert(`選擇的日期: ${date}`);
-        },
-        onDateChange: (date) => {
-          console.log('日期變更:', date);
-        },
-      });
-    }, 0);
-
-    return container;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: '使用自訂選項建立日期選擇器，限定 2024 年範圍。',
-      },
-    },
-  },
-};
-
-/**
- * 日期範圍限制 - 只能選擇未來 30 天
- */
-export const DateRangeRestriction = {
-  render: () => {
-    const container = createContainer('range-picker');
-    const today = getTodayString();
-    const maxDate = getFutureDate(30);
-
-    setTimeout(() => {
-      new IOSDatePicker('range-picker', {
-        title: '預約日期',
-        defaultDate: today,
-        minDate: today,
-        maxDate: maxDate,
-        imgPath: '',
-        onConfirm: (date) => {
-          console.log('預約日期:', date);
-          alert(`預約日期: ${date}`);
-        },
-      });
-    }, 0);
-
-    return container;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: `限定日期範圍：只能選擇今日起未來 30 天內的日期。適用於預約、排程等情境。`,
-      },
-    },
-  },
-};
-
-/**
- * 未來日期選擇 - 預約/排程
- */
-export const FutureDateOnly = {
-  render: () => {
-    const container = createContainer('future-picker');
-    const tomorrow = getFutureDate(1);
-
-    setTimeout(() => {
-      new IOSDatePicker('future-picker', {
-        title: '選擇預約時間',
-        defaultDate: tomorrow,
-        minDate: tomorrow,
-        maxYear: new Date().getFullYear() + 1,
-        imgPath: '',
-        onConfirm: (date) => {
-          console.log('預約時間:', date);
-          alert(`預約時間: ${date}`);
-        },
-      });
-    }, 0);
-
-    return container;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: '只能選擇明天之後的日期，適用於預約系統。',
-      },
-    },
-  },
-};
-
-/**
- * 帶入現有值
- */
-export const WithPrefilledValue = {
-  render: () => {
-    const wrapper = document.createElement('div');
-    wrapper.innerHTML = `
-      <div style="margin-bottom: 16px; padding: 12px; background: #E8F5E9; border-radius: 8px; font-family: -apple-system, sans-serif; font-size: 14px;">
-        <strong>已存在的日期：</strong> 1995-08-15
-      </div>
-    `;
-
-    const container = createContainer('prefilled-picker');
-    wrapper.appendChild(container);
-
-    setTimeout(() => {
-      new IOSDatePicker('prefilled-picker', {
-        title: '修改生日',
-        currentValue: '1995-08-15',
-        minDate: '1900-01-01',
-        maxDate: getTodayString(),
-        imgPath: '',
-        onConfirm: (date) => {
-          console.log('更新後的生日:', date);
-          alert(`更新後的生日: ${date}`);
-        },
-      });
-    }, 0);
-
-    return wrapper;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: '使用 `currentValue` 帶入現有日期值，適用於編輯情境。',
-      },
-    },
-  },
-};
-
-/**
- * 即時日期變更回調
- */
-export const RealtimeDateChange = {
-  render: () => {
-    const wrapper = document.createElement('div');
-
-    const display = document.createElement('div');
-    display.id = 'realtime-display';
-    display.style.cssText = 'margin-bottom: 16px; padding: 16px; background: #E3F2FD; border-radius: 8px; font-family: -apple-system, sans-serif; text-align: center;';
-    display.innerHTML = `
-      <div style="font-size: 12px; color: #666; margin-bottom: 4px;">目前選擇的日期</div>
-      <div id="selected-date" style="font-size: 24px; font-weight: 600; color: #1976D2;">尚未選擇</div>
-    `;
-    wrapper.appendChild(display);
-
-    const container = createContainer('realtime-picker');
-    wrapper.appendChild(container);
-
-    setTimeout(() => {
-      new IOSDatePicker('realtime-picker', {
-        title: '選擇日期',
-        defaultDate: getTodayString(),
-        imgPath: '',
-        onDateChange: (date) => {
-          document.getElementById('selected-date').textContent = date;
-          console.log('日期即時變更:', date);
-        },
-        onConfirm: (date) => {
-          alert(`確認選擇: ${date}`);
-        },
-      });
-    }, 0);
-
-    return wrapper;
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: '使用 `onDateChange` 回調即時監聽日期變更，可用於預覽或聯動其他元件。',
-      },
-    },
-  },
-};
-
-/**
- * 自訂主題色
- */
-export const CustomStyling = {
-  render: () => {
-    const wrapper = document.createElement('div');
-
-    // 說明區塊
-    const info = document.createElement('div');
-    info.style.cssText = 'margin-bottom: 16px; padding: 12px; background: #FFF3E0; border-radius: 8px; font-family: -apple-system, sans-serif; font-size: 13px;';
-    info.innerHTML = `
-      <strong>自訂 CSS 變數：</strong><br>
-      <code>--picker-selected: #E91E63</code><br>
-      <code>--picker-primary: #9C27B0</code>
-    `;
-    wrapper.appendChild(info);
-
-    const container = createContainer('styled-picker');
-    wrapper.appendChild(container);
-
-    // 注入自訂樣式
-    const style = document.createElement('style');
-    style.textContent = `
-      #styled-picker .ios-date-picker {
-        --picker-selected: #E91E63;
-        --picker-primary: #9C27B0;
+  // 注入自訂樣式（參考文件 4.5）
+  if (args.confirmAndSelectedColor || args.navigationColor || args.pickerBackground) {
+    const styleTag = document.createElement('style');
+    styleTag.textContent = `
+      #${uniqueId} .ios-date-picker {
+        ${args.confirmAndSelectedColor ? `--picker-selected: ${args.confirmAndSelectedColor};` : ''}
+        ${args.navigationColor ? `--picker-primary: ${args.navigationColor};` : ''}
+        ${args.pickerBackground ? `--picker-bg: ${args.pickerBackground};` : ''}
       }
     `;
-    wrapper.appendChild(style);
+    wrapper.appendChild(styleTag);
+  }
 
-    setTimeout(() => {
-      new IOSDatePicker('styled-picker', {
-        title: '自訂主題',
-        defaultDate: getTodayString(),
-        imgPath: '',
-        onConfirm: (date) => {
-          alert(`選擇的日期: ${date}`);
-        },
+  wrapper.appendChild(container);
+
+  // 使用 requestAnimationFrame 確保 DOM 已掛載
+  requestAnimationFrame(() => {
+    // 共用選項
+    const commonOptions = {
+      imgPath: '',
+      title: args.title,
+      defaultDate: args.defaultDate,
+      currentValue: args.currentValue,
+      minDate: args.minDate,
+      maxDate: args.maxDate,
+      onConfirm: (date) => {
+        console.log('選擇的日期:', date);
+        alert(`確認選擇: ${date}`);
+      },
+      onDateChange: (date) => {
+        // 即時更新顯示面板
+        const displayEl = document.getElementById(`${uniqueId}-display`);
+        if (displayEl) {
+          displayEl.textContent = date;
+        }
+        console.log('日期變更:', date);
+      },
+    };
+
+    if (args.preset) {
+      // 使用預設模式（傳入自訂選項覆蓋預設值）
+      createDatePicker(uniqueId, args.preset, commonOptions);
+    } else {
+      // 使用自訂選項
+      new IOSDatePicker(uniqueId, {
+        ...commonOptions,
+        title: args.title || '選擇日期',
+        defaultDate: args.defaultDate || getTodayString(),
       });
-    }, 0);
+    }
+  });
 
-    return wrapper;
+  return wrapper;
+};
+
+// Story 設定（參考文件 4.6）
+export default {
+  title: 'Components/DatePicker',
+  parameters: {
+    layout: 'centered',
   },
+  // 定義 Controls 介面
+  argTypes: {
+    preset: {
+      control: 'select',
+      options: [null, 'birthday', 'memberCreated', 'accounting', 'orderManagement'],
+      description: '預設模式（選擇空值可使用完全自訂模式）',
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: 'birthday' },
+      },
+    },
+    title: {
+      control: 'text',
+      description: '標題文字',
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: '選擇日期' },
+      },
+    },
+    width: {
+      control: 'text',
+      description: '容器寬度',
+      table: {
+        type: { summary: 'string' },
+        defaultValue: { summary: '375px' },
+      },
+    },
+    confirmAndSelectedColor: {
+      control: 'color',
+      description: '「確認」按鈕文字、選中日期圓圈背景',
+      table: {
+        category: 'Theme',
+        type: { summary: '--picker-selected' },
+        defaultValue: { summary: '#FF812A' },
+      },
+    },
+    navigationColor: {
+      control: 'color',
+      description: '月份切換箭頭 < >、年月下拉、今日文字',
+      table: {
+        category: 'Theme',
+        type: { summary: '--picker-primary' },
+        defaultValue: { summary: '#007AFF' },
+      },
+    },
+    pickerBackground: {
+      control: 'color',
+      description: '選擇器整體背景',
+      table: {
+        category: 'Theme',
+        type: { summary: '--picker-bg' },
+        defaultValue: { summary: '#F2F2F7' },
+      },
+    },
+    defaultDate: {
+      control: 'text',
+      description: '預設選中日期（初始化時使用）',
+      table: {
+        category: 'Date',
+        type: { summary: 'YYYY-MM-DD' },
+      },
+    },
+    currentValue: {
+      control: 'text',
+      description: '帶入現有值（編輯模式，優先於 defaultDate）',
+      table: {
+        category: 'Date',
+        type: { summary: 'YYYY-MM-DD' },
+      },
+    },
+    minDate: {
+      control: 'text',
+      description: '最小可選日期',
+      table: {
+        category: 'Date',
+        type: { summary: 'YYYY-MM-DD' },
+      },
+    },
+    maxDate: {
+      control: 'text',
+      description: '最大可選日期',
+      table: {
+        category: 'Date',
+        type: { summary: 'YYYY-MM-DD' },
+      },
+    },
+  },
+};
+
+/**
+ * 日期選擇器完整展示
+ * 透過右側 Controls 面板動態調整所有參數
+ */
+export const Playground = {
+  args: {
+    preset: 'birthday',
+    title: '選擇日期',
+    width: '375px',
+    defaultDate: '2000-06-15',
+    minDate: '1900-01-01',
+    maxDate: getTodayString(),
+  },
+  render: (args) => Template(args),
   parameters: {
     docs: {
       description: {
-        story: '透過 CSS 變數自訂主題色彩，可覆寫 `--picker-selected`（選中色）和 `--picker-primary`（主色）。',
+        story: `完整的日期選擇器展示，使用右側 Controls 面板動態調整：
+
+### 基本設定
+- **preset**: 切換預設模式（birthday、memberCreated、accounting、orderManagement），選擇空值可完全自訂
+- **title**: 自訂標題文字
+- **width**: 調整容器寬度
+
+### 日期設定（格式：YYYY-MM-DD）
+- **defaultDate**: 預設選中日期
+- **currentValue**: 帶入現有值（編輯情境）
+- **minDate / maxDate**: 限制可選範圍
+
+### 主題色彩
+- **confirmAndSelectedColor**: 「確認」按鈕、選中日期圓圈
+- **navigationColor**: 導航箭頭、今日文字
+- **pickerBackground**: 整體背景
+
+---
+上方藍色面板會即時顯示 \`onDateChange\` 回調的日期變更。`,
       },
     },
   },

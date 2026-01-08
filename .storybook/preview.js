@@ -10,20 +10,19 @@ window.VanillaCalendar = VanillaCalendar;
 /** @type { import('@storybook/html-vite').Preview } */
 const preview = {
   parameters: {
-    controls: {
-      matchers: {
-        color: /(background|color)$/i,
-        date: /Date$/i,
-      },
-    },
+    // 元件在畫面上預設置中顯示
     layout: 'centered',
+
+    // 自訂工具列中的背景顏色切換
     backgrounds: {
       default: 'light',
       values: [
-        { name: 'light', value: '#F2F2F7' },
+        { name: 'light', value: '#F2F2F7' }, // iOS 淺色背景
         { name: 'white', value: '#FFFFFF' },
       ],
     },
+
+    // Viewport 設定來模擬手機尺寸
   },
 };
 

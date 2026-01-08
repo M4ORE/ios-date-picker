@@ -14,68 +14,34 @@
   ],
   "author": "M4ORE",
   "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/M4ORE/ios-date-picker.git"
-  },
-  "bugs": {
-    "url": "https://github.com/M4ORE/ios-date-picker/issues"
-  },
-  "homepage": "https://github.com/M4ORE/ios-date-picker#readme",
   "main": "dist/ios-date-picker.umd.js",
   "module": "dist/ios-date-picker.esm.js",
-  "browser": "dist/ios-date-picker.umd.js",
-  "unpkg": "dist/ios-date-picker.min.js",
-  "jsdelivr": "dist/ios-date-picker.min.js",
-  "types": "dist/index.d.ts",
   "exports": {
     ".": {
       "import": "./dist/ios-date-picker.esm.js",
-      "require": "./dist/ios-date-picker.umd.js",
-      "browser": "./dist/ios-date-picker.umd.js"
+      "require": "./dist/ios-date-picker.umd.js"
     },
-    "./css": "./dist/ios-date-picker.css",
-    "./dist/*": "./dist/*"
+    "./css": "./dist/ios-date-picker.css"
   },
-  "files": [
-    "dist",
-    "src",
-    "img"
-  ],
-  "sideEffects": [
-    "*.css"
-  ],
   "scripts": {
     "build": "rollup -c && node scripts/build-css.js",
-    "build:js": "rollup -c",
-    "build:css": "node scripts/build-css.js",
-    "prepublishOnly": "npm run build",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
   "peerDependencies": {
     "vanilla-calendar-pro": "^2.9.0"
   },
-  "peerDependenciesMeta": {
-    "vanilla-calendar-pro": {
-      "optional": false
-    }
-  },
   "devDependencies": {
-    "@chromatic-com/storybook": "^4.1.3",
+    "storybook": "^8.5.8",
+    "@storybook/html-vite": "^8.5.8",
+    "@storybook/addon-essentials": "^8.5.8",
+    "@storybook/addon-interactions": "^8.5.8",
+    "@storybook/addon-a11y": "^8.5.8",
+    "vite": "^5.4.11",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
-    "@storybook/addon-a11y": "^10.1.11",
-    "@storybook/addon-docs": "^10.1.11",
-    "@storybook/addon-vitest": "^10.1.11",
-    "@storybook/html-vite": "^10.1.11",
-    "@vitest/browser-playwright": "^4.0.16",
-    "@vitest/coverage-v8": "^4.0.16",
-    "playwright": "^1.57.0",
     "rollup": "^4.9.0",
-    "storybook": "^10.1.11",
-    "vanilla-calendar-pro": "^2.9.10",
-    "vitest": "^4.0.16"
+    "vanilla-calendar-pro": "^2.9.10"
   },
   "engines": {
     "node": ">=18.0.0"
