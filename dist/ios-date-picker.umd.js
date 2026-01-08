@@ -6,10 +6,10 @@
  * @requires vanilla-calendar-pro@^2.9.0
  */
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-    typeof define === 'function' && define.amd ? define(['exports'], factory) :
-    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.IOSDatePickerLib = {}));
-})(this, (function (exports) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('vanilla-calendar-pro')) :
+    typeof define === 'function' && define.amd ? define(['exports', 'vanilla-calendar-pro'], factory) :
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.IOSDatePickerLib = {}, global.VanillaCalendar));
+})(this, (function (exports, VanillaCalendar) { 'use strict';
 
     /**
      * iOS Date Picker
@@ -19,6 +19,7 @@
      * @module @m4ore/ios-date-picker
      * @requires vanilla-calendar-pro@^2.9.0
      */
+
 
     class IOSDatePicker {
         constructor(containerId, options = {}) {
@@ -165,10 +166,6 @@
         }
 
         _initCalendar() {
-            if (typeof VanillaCalendar === 'undefined') {
-                throw new Error('請先載入 Vanilla Calendar Pro 套件 (npm install vanilla-calendar-pro@^2.9.0)');
-            }
-
             this.calendar = new VanillaCalendar(`#${this._calendarId}`, {
                 type: 'default',
                 settings: {

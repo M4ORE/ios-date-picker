@@ -7,6 +7,8 @@
  * @requires vanilla-calendar-pro@^2.9.0
  */
 
+import VanillaCalendar from 'vanilla-calendar-pro';
+
 export class IOSDatePicker {
     constructor(containerId, options = {}) {
         this.container = document.getElementById(containerId);
@@ -152,10 +154,6 @@ export class IOSDatePicker {
     }
 
     _initCalendar() {
-        if (typeof VanillaCalendar === 'undefined') {
-            throw new Error('請先載入 Vanilla Calendar Pro 套件 (npm install vanilla-calendar-pro@^2.9.0)');
-        }
-
         this.calendar = new VanillaCalendar(`#${this._calendarId}`, {
             type: 'default',
             settings: {

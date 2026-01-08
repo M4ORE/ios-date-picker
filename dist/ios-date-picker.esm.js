@@ -5,6 +5,8 @@
  *
  * @requires vanilla-calendar-pro@^2.9.0
  */
+import VanillaCalendar from 'vanilla-calendar-pro';
+
 /**
  * iOS Date Picker
  * Copyright (c) 2025-present M4ORE Inc.
@@ -13,6 +15,7 @@
  * @module @m4ore/ios-date-picker
  * @requires vanilla-calendar-pro@^2.9.0
  */
+
 
 class IOSDatePicker {
     constructor(containerId, options = {}) {
@@ -159,10 +162,6 @@ class IOSDatePicker {
     }
 
     _initCalendar() {
-        if (typeof VanillaCalendar === 'undefined') {
-            throw new Error('請先載入 Vanilla Calendar Pro 套件 (npm install vanilla-calendar-pro@^2.9.0)');
-        }
-
         this.calendar = new VanillaCalendar(`#${this._calendarId}`, {
             type: 'default',
             settings: {

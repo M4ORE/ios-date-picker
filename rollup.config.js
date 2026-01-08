@@ -19,6 +19,7 @@ export default [
             banner,
             sourcemap: true
         },
+        external: ['vanilla-calendar-pro'],
         plugins: [resolve()]
     },
     // UMD build (for browsers and CDN)
@@ -30,8 +31,11 @@ export default [
             name: 'IOSDatePickerLib',
             banner,
             sourcemap: true,
-            globals: {}
+            globals: {
+                'vanilla-calendar-pro': 'VanillaCalendar'
+            }
         },
+        external: ['vanilla-calendar-pro'],
         plugins: [resolve()]
     },
     // Minified UMD build (for CDN)
@@ -43,8 +47,11 @@ export default [
             name: 'IOSDatePickerLib',
             banner,
             sourcemap: true,
-            globals: {}
+            globals: {
+                'vanilla-calendar-pro': 'VanillaCalendar'
+            }
         },
+        external: ['vanilla-calendar-pro'],
         plugins: [
             resolve(),
             terser({
